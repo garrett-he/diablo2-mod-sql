@@ -5,6 +5,7 @@ description = "A library that allows you to modify Diablo II data with SQL for m
 authors = ["Garrett HE <garrett.he@hotmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
+packages = [{include = "diablo2_mod_sql", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.7"

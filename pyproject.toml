@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "diablo2-mod-sql"
+version = "0.1.0"
+description = "A library that allows you to modify Diablo II data with SQL for modding purposes."
+authors = ["Garrett HE <garrett.he@hotmail.com>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

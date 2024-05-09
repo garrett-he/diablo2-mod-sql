@@ -147,6 +147,90 @@ files = [
 ]
 
 [[package]]
+name = "mo-dots"
+version = "9.356.23062"
+description = "More Dots! Dot-access to Python dicts like Javascript"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mo_dots-9.356.23062-py2.py3-none-any.whl", hash = "sha256:e16fde2e3494510594da201de3b3cde6d4b7c52f562fc8401af28c2df08e591c"},
+]
+
+[package.dependencies]
+mo-future = "7.340.23006"
+mo-imports = "7.341.23006"
+
+[package.extras]
+tests = ["jx-elasticsearch", "mo-json", "mo-logs", "mo-math", "mo-testing", "mo-threads", "mo-times", "pyLibrary"]
+
+[[package]]
+name = "mo-future"
+version = "7.340.23006"
+description = "More future! Make Python 2/3 compatibility a bit easier"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mo_future-7.340.23006-py2.py3-none-any.whl", hash = "sha256:9227e2bad1280cee13d80b929fad4bf3a14852cedd703e63cc2e0e6925ecee70"},
+]
+
+[[package]]
+name = "mo-imports"
+version = "7.341.23006"
+description = "More Imports! - Delayed importing"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mo_imports-7.341.23006-py2.py3-none-any.whl", hash = "sha256:d9dce186ae4e942f2c63d4ce4f53867f79471532de43457fe93829dfd24b6008"},
+]
+
+[package.dependencies]
+mo-future = "7.340.23006"
+
+[package.extras]
+tests = ["mo-logs"]
+
+[[package]]
+name = "mo-parsing"
+version = "8.356.23062"
+description = "Another PEG Parsing Tool"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mo_parsing-8.356.23062-py2.py3-none-any.whl", hash = "sha256:896da5b411cadf3128772aee7e3457414df3e44140a27bbff7c5b5a8de87a9ab"},
+]
+
+[package.dependencies]
+mo-dots = "9.356.23062"
+mo-future = "7.340.23006"
+
+[package.extras]
+tests = ["mo-files", "mo-logs", "mo-testing", "mo-threads"]
+
+[[package]]
+name = "mo-sql-parsing"
+version = "9.357.23070"
+description = "More SQL Parsing! Parse SQL into JSON parse tree"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mo_sql_parsing-9.357.23070-py2.py3-none-any.whl", hash = "sha256:269bb27025ad54d979bfd42577161b8270bd28928d997fa02d90829cd3f1deb2"},
+]
+
+[package.dependencies]
+mo-dots = "9.356.23062"
+mo-future = "7.340.23006"
+mo-imports = "7.341.23006"
+mo-parsing = "8.356.23062"
+
+[package.extras]
+tests = ["mo-files", "mo-streams", "mo-testing", "mo-threads", "zstandard"]
+
+[[package]]
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
@@ -282,4 +366,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7"
-content-hash = "53fd05dcb54a408ef689f8199be31253aea215d3299b2a919ff6191731a4e161"
+content-hash = "1a25bce2ee8ba64952c227ef59a68038ba4edcf67ff4da971ec6b3dd157382aa"

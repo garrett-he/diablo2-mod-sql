@@ -37,7 +37,22 @@ class D2Database:
         return stmt
 
 
-DataRow = List[Any]
+class DataRow:
+    _row: list
+    _columns: tuple
+
+    def __init__(self, row: list, columns: tuple):
+        self._row = row
+        self._columns = columns
+
+    def __getitem__(self, key: Union[str, int]):
+        if type(key) is str:
+            return self._row[self._columns.index(key)]
+
+        return self._row[key]
+
+    def __repr__(self):
+        return self._row.__repr__()
 
 
 class DataTable(ABC):
@@ -106,4 +121,4 @@ class D2StringTable(DataTable):
 
         with path.open('r', encoding='utf-8-sig') as fp:
             for row in json.load(fp):
-                self.rows.append(list(map(lambda col: row[col], self.columns)))
+                self.rows.append(DataRow(list(map(lambda col: row[col], self.columns)), self.columns))

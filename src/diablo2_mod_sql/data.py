@@ -51,6 +51,12 @@ class DataRow:
 
         return self._row[key]
 
+    def __setitem__(self, key: Union[str, int], value):
+        if type(key) is str:
+            key = self._columns.index(key)
+
+        self._row[key] = value
+
     def __repr__(self):
         return self._row.__repr__()
 
@@ -111,6 +117,35 @@ class SelectStatement(SQLStatement):
             return self.table.rows
 
         return filter(lambda row: self.where.test(row), self.table.rows)
+
+
+class UpdateStatement(SQLStatement):
+    set: dict
+
+    def __init__(self, table: DataTable, sql_tree: dict):
+        super().__init__(table, sql_tree)
+
+        if 'set' in sql_tree:
+            self.set = sql_tree['set']
+
+    def execute(self) -> int:
+        i = 0
+
+        for row in self.table.rows:
+            if self.where is not None and not self.where.test(row):
+                continue
+
+            for key in self.set:
+                value = self.set[key]
+
+                if type(value) is dict and 'literal' in value:
+                    row[key] = value['literal']
+                else:
+                    row[key] = row[value]
+
+            i += 1
+
+        return i
 
 
 class D2StringTable(DataTable):

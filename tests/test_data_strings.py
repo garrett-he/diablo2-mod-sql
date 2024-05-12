@@ -1,6 +1,6 @@
 from pathlib import Path
 from pkg_resources import resource_filename
-from diablo2_mod_sql.data import D2StringTable, SelectStatement, UpdateStatement
+from diablo2_mod_sql.data import D2StringTable, SelectStatement, UpdateStatement, InsertStatement
 
 
 def test_data_table():
@@ -70,3 +70,27 @@ def test_data_table():
     assert rows[1]['enUS'] == rows[1]['zhCN']
 
     assert c == 2
+
+    stmt = InsertStatement(tb, {
+        'insert': 'presence-states.json',
+        'columns': ['id', 'Key'],
+        'query': {
+            'select': [
+                {'value': 88888},
+                {'value': 'New_Item'}
+            ]
+        }
+    })
+
+    stmt.execute()
+
+    stmt = SelectStatement(tb, {
+        'select': '*',
+        'from': 'presence-states.json'
+    })
+
+    rows = list(stmt.execute())
+
+    assert len(rows) == 17
+    assert rows[16]['id'] == 88888
+    assert rows[16]['Key'] == 'New_Item'

@@ -73,10 +73,12 @@ class DataTable(ABC):
 class SQLStatement:
     table: DataTable
     where: Union[None, Operand]
+    sql_tree: dict
 
     def __init__(self, table: DataTable, sql_tree: dict):
         self.table = table
         self.where = None
+        self.sql_tree = sql_tree
 
         if 'where' in sql_tree:
             self.where = self.parse_op_tree(sql_tree['where'])
@@ -146,6 +148,21 @@ class UpdateStatement(SQLStatement):
             i += 1
 
         return i
+
+
+class InsertStatement(SQLStatement):
+    def execute(self) -> None:
+        row = [''] * len(self.table.columns)
+
+        for i in range(len(self.sql_tree['query']['select'])):
+            if 'columns' in self.sql_tree:
+                column_index = self.table.columns.index(self.sql_tree['columns'][i])
+            else:
+                column_index = i
+
+            row[column_index] = self.sql_tree['query']['select'][i]['value']
+
+        self.table.rows.append(DataRow(row, self.table.columns))
 
 
 class D2StringTable(DataTable):

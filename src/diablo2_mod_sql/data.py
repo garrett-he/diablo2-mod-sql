@@ -165,6 +165,20 @@ class InsertStatement(SQLStatement):
         self.table.rows.append(DataRow(row, self.table.columns))
 
 
+class DeleteStatement(SQLStatement):
+    def execute(self) -> int:
+        i = len(self.table.rows)
+
+        if self.where is None:
+            self.table.rows = []
+
+            return i
+
+        self.table.rows = [row for row in self.table.rows if not self.where.test(row)]
+
+        return i - len(self.table.rows)
+
+
 class D2StringTable(DataTable):
     def __init__(self, path: Path):
         self.columns = ('id', 'Key', 'enUS', 'zhTW', 'deDE', 'esES', 'frFR', 'itIT', 'koKR', 'plPL', 'esMX', 'jaJP', 'ptBR', 'ruRU', 'zhCN')

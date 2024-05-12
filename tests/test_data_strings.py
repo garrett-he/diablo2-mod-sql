@@ -1,6 +1,6 @@
 from pathlib import Path
 from pkg_resources import resource_filename
-from diablo2_mod_sql.data import D2StringTable, SelectStatement, UpdateStatement, InsertStatement
+from diablo2_mod_sql.data import D2StringTable, SelectStatement, UpdateStatement, InsertStatement, DeleteStatement
 
 
 def test_data_table():
@@ -94,3 +94,28 @@ def test_data_table():
     assert len(rows) == 17
     assert rows[16]['id'] == 88888
     assert rows[16]['Key'] == 'New_Item'
+
+    stmt = DeleteStatement(tb, {
+        'delete': 'presence-states.json',
+        'where': {
+            'or': [
+                {
+                    'eq': ['id', 26047]
+                },
+                {
+                    'eq': ['id', 26048]
+                }
+            ]
+        }
+    })
+
+    c = stmt.execute()
+    assert c == 2
+
+    stmt = SelectStatement(tb, {
+        'select': '*',
+        'from': 'presence-states.json'
+    })
+
+    rows = list(stmt.execute())
+    assert len(rows) == 15

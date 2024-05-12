@@ -1,6 +1,7 @@
 from pathlib import Path
 from pkg_resources import resource_filename
-from diablo2_mod_sql.data import D2StringTable, SelectStatement, UpdateStatement, InsertStatement, DeleteStatement
+from diablo2_mod_sql.sql.statement import SelectStatement, UpdateStatement, InsertStatement, DeleteStatement
+from diablo2_mod_sql.data.d2string import D2StringTable
 
 
 def test_data_table():

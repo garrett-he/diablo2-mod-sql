@@ -1,11 +1,22 @@
 from pathlib import Path
 from pkg_resources import resource_filename
-from diablo2_mod_sql.sql.statement import SelectStatement, UpdateStatement, InsertStatement, DeleteStatement
+from diablo2_mod_sql.data import D2Database
+from diablo2_mod_sql.sql.statement import SelectStatement, UpdateStatement, InsertStatement, DeleteStatement, parse
 from diablo2_mod_sql.data.d2string import D2StringTable
 
 
+def test_data_database():
+    db = D2Database(Path(resource_filename('tests.res', 'data')))
+    stmt = parse(db, 'SELECT * FROM local/lng/strings/presence-states.json WHERE id = 26047')
+    rows = list(stmt.execute())
+
+    assert len(rows) == 1
+    assert rows[0]['id'] == 26047
+    assert rows[0]['Key'] == 'presenceMenus'
+
+
 def test_data_table():
-    filename = Path(resource_filename('tests.res', 'presence-states.json'))
+    filename = Path(resource_filename('tests.res', 'data/local/lng/strings/presence-states.json'))
 
     tb = D2StringTable(filename)
 

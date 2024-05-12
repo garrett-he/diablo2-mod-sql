@@ -1,23 +1,43 @@
 from __future__ import annotations
 from typing import Union, Iterable
+from abc import ABC, abstractmethod
 import mo_sql_parsing
 from diablo2_mod_sql.data import D2Database
 from diablo2_mod_sql.data.table import DataTable, DataRow
 from diablo2_mod_sql.sql.operand import operand_map, Operand
 
+table_mask = {
+    '/': '__SEP__',
+    '-': '__HYPHEN__'
+}
+
+
+def mask_table_name(sql: str) -> str:
+    for k, v in table_mask.items():
+        sql = sql.replace(k, v)
+
+    return sql
+
+
+def unmask_table_name(name: str) -> str:
+    for k, v in table_mask.items():
+        name = name.replace(v, k)
+
+    return name
+
 
 def parse(db: D2Database, sql: str) -> SQLStatement:
-    sql_tree = mo_sql_parsing.parse(sql.replace('/', '_'))
+    sql_tree = mo_sql_parsing.parse(mask_table_name(sql))
 
     if 'select' in sql_tree:
-        stmt = SelectStatement(db.get_table(sql_tree['from'].replace('_', '/')), sql_tree)
+        stmt = SelectStatement(db.get_table(unmask_table_name(sql_tree['from'])), sql_tree)
     else:
         raise SyntaxError(sql)
 
     return stmt
 
 
-class SQLStatement:
+class SQLStatement(ABC):
     table: DataTable
     where: Union[None, Operand]
     sql_tree: dict
@@ -58,6 +78,10 @@ class SQLStatement:
                 })
 
         return result
+
+    @abstractmethod
+    def execute(self):
+        ...
 
 
 class SelectStatement(SQLStatement):

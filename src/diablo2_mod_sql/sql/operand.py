@@ -8,7 +8,7 @@ class Operand(ABC):
         self.args = []
 
     @abstractmethod
-    def test(self, row: list) -> bool:
+    def test(self, row: list) -> bool:  # pragma: no cover
         ...
 
 
@@ -42,11 +42,12 @@ class EqOperand(Operand):
     def test(self, row: list) -> bool:
         def get_value(arg) -> str:
             if arg['type'] == 'operand':
-                return str(arg['value'].test(row))
+                print(arg['value'].test(row))
+                return arg['value'].test(row)
             elif arg['type'] == 'literal':
-                return str(arg['value'])
+                return arg['value']
             elif arg['type'] == 'column':
-                return str(row[arg['value']])
+                return row[arg['value']]
 
         value1 = get_value(self.args[0])
         value2 = get_value(self.args[1])
@@ -54,8 +55,25 @@ class EqOperand(Operand):
         return value1 == value2
 
 
+class EchoOperand(Operand):  # pragma: no cover
+    def test(self, row: list) -> any:
+        if len(self.args) != 1:
+            raise ValueError(self.args)
+
+        arg = self.args[0]
+        if arg['type'] == 'operand':
+            return arg['value'].test(row)
+        elif arg['type'] == 'literal':
+            return arg['value']
+        elif arg['type'] == 'column':
+            return row[arg['value']]
+        else:
+            raise ValueError(arg)
+
+
 operand_map: dict[str, Operand.__class__] = {
     'and': AndOperand,
     'or': OrOperand,
-    'eq': EqOperand
+    'eq': EqOperand,
+    'echo': EchoOperand
 }

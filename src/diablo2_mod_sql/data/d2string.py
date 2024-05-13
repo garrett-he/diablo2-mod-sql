@@ -5,8 +5,9 @@ from .table import DataTable, DataRow
 
 class D2StringTable(DataTable):
     def __init__(self, path: Path):
-        self.columns = ('id', 'Key', 'enUS', 'zhTW', 'deDE', 'esES', 'frFR', 'itIT', 'koKR', 'plPL', 'esMX', 'jaJP', 'ptBR', 'ruRU', 'zhCN')
+        super().__init__(path)
 
+        self.columns = ('id', 'Key', 'enUS', 'zhTW', 'deDE', 'esES', 'frFR', 'itIT', 'koKR', 'plPL', 'esMX', 'jaJP', 'ptBR', 'ruRU', 'zhCN')
         self.rows = []
 
         with path.open('r', encoding='utf-8-sig') as fp:

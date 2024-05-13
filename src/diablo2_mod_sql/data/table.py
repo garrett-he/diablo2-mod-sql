@@ -23,14 +23,17 @@ class DataRow:
 
         self._row[key] = value
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return self._row.__repr__()
 
 
 class DataTable(ABC):
+    name: str
+    path: Path
     columns: tuple
     rows: List[DataRow]
 
     @abstractmethod
     def __init__(self, path: Path):
-        ...
+        self.name = path.name
+        self.path = path

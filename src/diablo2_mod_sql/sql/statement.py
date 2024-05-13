@@ -26,13 +26,19 @@ def unmask_table_name(name: str) -> str:
     return name
 
 
-def parse(db: D2Database, sql: str) -> SQLStatement:
+def parse_statement(db: D2Database, sql: str) -> SQLStatement:
     sql_tree = mo_sql_parsing.parse(mask_table_name(sql))
 
     if 'select' in sql_tree:
         stmt = SelectStatement(db.get_table(unmask_table_name(sql_tree['from'])), sql_tree)
+    elif 'update' in sql_tree:
+        stmt = UpdateStatement(db.get_table(unmask_table_name(sql_tree['update'])), sql_tree)
+    elif 'insert' in sql_tree:
+        stmt = InsertStatement(db.get_table(unmask_table_name(sql_tree['insert'])), sql_tree)
+    elif 'delete' in sql_tree:
+        stmt = DeleteStatement(db.get_table(unmask_table_name(sql_tree['delete'])), sql_tree)
     else:
-        raise SyntaxError(sql)
+        raise SyntaxError(sql)  # pragma: no cover
 
     return stmt
 
@@ -51,36 +57,44 @@ class SQLStatement(ABC):
             self.where = self.parse_op_tree(sql_tree['where'])
 
     def parse_op_tree(self, op_tree: dict) -> Operand:
+        def parse_op(arg):
+            if type(arg) is dict:
+                if 'literal' in arg:
+                    return {
+                        'type': 'literal',
+                        'value': arg['literal']
+                    }
+                else:
+                    return {
+                        'type': 'operand',
+                        'value': self.parse_op_tree(arg)
+                    }
+            elif type(arg) is str:
+                return {
+                    'type': 'column',
+                    'value': self.table.columns.index(arg)
+                }
+            else:
+                return {
+                    'type': 'literal',
+                    'value': arg
+                }
+
         op_code = next(iter(op_tree))
         result = operand_map[op_code]()
 
+        if not (type(op_tree[op_code]) is list):
+            result.args.append(parse_op(op_tree[op_code]))
+
+            return result
+
         for arg in op_tree[op_code]:
-            if type(arg) is dict:
-                if 'literal' in arg:
-                    result.args.append({
-                        'type': 'literal',
-                        'value': arg['literal']
-                    })
-                else:
-                    result.args.append({
-                        'type': 'operand',
-                        'value': self.parse_op_tree(arg)
-                    })
-            elif type(arg) is str:
-                result.args.append({
-                    'type': 'column',
-                    'value': self.table.columns.index(arg)
-                })
-            else:
-                result.args.append({
-                    'type': 'literal',
-                    'value': arg
-                })
+            result.args.append(parse_op(arg))
 
         return result
 
     @abstractmethod
-    def execute(self):
+    def execute(self):  # pragma: no cover
         ...
 
 
@@ -113,8 +127,10 @@ class UpdateStatement(SQLStatement):
 
                 if type(value) is dict and 'literal' in value:
                     row[key] = value['literal']
-                else:
+                elif type(value) is str:
                     row[key] = row[value]
+                else:
+                    row[key] = value
 
             i += 1
 
@@ -131,7 +147,12 @@ class InsertStatement(SQLStatement):
             else:
                 column_index = i
 
-            row[column_index] = self.sql_tree['query']['select'][i]['value']
+            value = self.sql_tree['query']['select'][i]['value']
+
+            if type(value) is dict and 'literal' in value:
+                row[column_index] = value['literal']
+            else:
+                row[column_index] = value
 
         self.table.rows.append(DataRow(row, self.table.columns))
 

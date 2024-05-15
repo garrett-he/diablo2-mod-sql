@@ -1,13 +1,15 @@
 from pathlib import Path
 from .table import DataTable
 from .d2string import D2StringTable
+from .d2txt import D2TxtTable
 
 
 class D2Database:
     base_dir: Path
 
     _table_types = {
-        '.json': D2StringTable
+        '.json': D2StringTable,
+        '.txt': D2TxtTable
     }
 
     def __init__(self, base_dir: Path):

@@ -192,4 +192,8 @@ txt_columns_map = {
         {'name': 'PermStoreItem', 'type': DataColumnType.INTEGER},
         {'name': 'diablocloneweight', 'type': DataColumnType.INTEGER},
     ]),
+    'armtype.txt': DataColumnCollection([
+        {'name': 'Name', 'type': DataColumnType.STRING},
+        {'name': 'Token', 'type': DataColumnType.STRING},
+    ]),
 }

@@ -1,6 +1,15 @@
 from abc import ABC, abstractmethod
 
 
+def get_value(row, arg) -> str:
+    if arg['type'] == 'operand':
+        return arg['value'].test(row)
+    elif arg['type'] == 'literal':
+        return arg['value']
+    elif arg['type'] == 'column':
+        return row[arg['value']]
+
+
 class Operand(ABC):
     args: list
 
@@ -40,17 +49,8 @@ class OrOperand(Operand):
 
 class EqOperand(Operand):
     def test(self, row: list) -> bool:
-        def get_value(arg) -> str:
-            if arg['type'] == 'operand':
-                print(arg['value'].test(row))
-                return arg['value'].test(row)
-            elif arg['type'] == 'literal':
-                return arg['value']
-            elif arg['type'] == 'column':
-                return row[arg['value']]
-
-        value1 = get_value(self.args[0])
-        value2 = get_value(self.args[1])
+        value1 = get_value(row, self.args[0])
+        value2 = get_value(row, self.args[1])
 
         return value1 == value2
 
@@ -71,9 +71,18 @@ class EchoOperand(Operand):  # pragma: no cover
             raise ValueError(arg)
 
 
+class InOperand(Operand):
+    def test(self, row: list) -> bool:
+        value1 = get_value(row, self.args[0])
+        value2 = get_value(row, self.args[1])
+
+        return value1 in value2
+
+
 operand_map: dict[str, Operand.__class__] = {
     'and': AndOperand,
     'or': OrOperand,
     'eq': EqOperand,
-    'echo': EchoOperand
+    'echo': EchoOperand,
+    'in': InOperand
 }

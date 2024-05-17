@@ -134,6 +134,13 @@ def test_select_sql(d2database):
     assert rows[15][0] == 26062
     assert rows[15][1] == 'presenceA5Hell'
 
+    stmt = parse_statement(d2database, f'SELECT * FROM {tb_name} WHERE id in (26058, 26059)')
+    rows = list(stmt.execute())
+
+    assert len(rows) == 2
+    assert rows[0][0] == 26058
+    assert rows[1][0] == 26059
+
 
 def test_update_sql(d2database):
     stmt = parse_statement(d2database, f"UPDATE {tb_name} SET id = 12345 WHERE id = 26047")
